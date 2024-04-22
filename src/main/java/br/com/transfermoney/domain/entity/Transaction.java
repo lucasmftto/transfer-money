@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Document
 public class Transaction {
@@ -15,14 +16,14 @@ public class Transaction {
     private String clientId;
     private TransactionType transactionType;
     private String description;
-    private String date;
+    private LocalDate date;
     private BigDecimal value;
 
 
     public Transaction() {
     }
 
-    public Transaction(String clientId, TransactionType transactionType, String description, String date,
+    public Transaction(String clientId, TransactionType transactionType, String description, LocalDate date,
                        BigDecimal value) {
         this.clientId = clientId;
         this.transactionType = transactionType;
@@ -63,11 +64,11 @@ public class Transaction {
         this.description = description;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
