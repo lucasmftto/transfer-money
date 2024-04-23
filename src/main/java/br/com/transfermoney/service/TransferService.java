@@ -19,6 +19,10 @@ public class TransferService {
     private ClientRepository clientRepository;
     @Autowired
     private TransactionService transactionService;
+    @Autowired
+    private ExternalService externalService;
+    @Autowired
+    private NotifierService notifierService;
 
     @Transactional
     public void transfer(TransferResource transactionResource) {
@@ -36,16 +40,21 @@ public class TransferService {
             throw new IllegalArgumentException("Insufficient balance");
         }
 
-        this.updateBalance(clientPayer, clientPayee, transactionResource);
+        if (this.externalService.isAuthorized(clientPayer, clientPayee)) {
+            this.updateBalance(clientPayer, clientPayee, transactionResource);
+        }
 
     }
 
     public void updateBalance(Client clientPayer, Client clientPayee, TransferResource transactionResource) {
+        //TODO: Lock clientPayer and clientPayee
         clientPayer.setBalance(clientPayer.getBalance().subtract(transactionResource.value()));
         clientPayee.setBalance(clientPayee.getBalance().add(transactionResource.value()));
         this.transactionService.addTransaction(clientPayer, clientPayee, transactionResource);
         this.clientRepository.save(clientPayer);
         this.clientRepository.save(clientPayee);
+
+        this.notifierService.notifyClient(clientPayer, clientPayee, transactionResource);
     }
 }
 
