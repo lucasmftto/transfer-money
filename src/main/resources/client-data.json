@@ -1,0 +1,8 @@
+[
+  {
+    "_class": "br.com.transfermoney.domain.entity.Client",
+    "id": 1,
+    "document": "document 1",
+    "fullName": "Client 1"
+  }
+]

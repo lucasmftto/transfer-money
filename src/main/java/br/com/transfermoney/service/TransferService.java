@@ -4,6 +4,7 @@ import br.com.transfermoney.api.TransferResource;
 import br.com.transfermoney.domain.entity.Client;
 import br.com.transfermoney.domain.entity.PersonType;
 import br.com.transfermoney.repository.ClientRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class TransferService {
     private NotifierService notifierService;
 
     @Transactional
-    public void transfer(TransferResource transactionResource) {
+    public void transfer(TransferResource transactionResource) throws JsonProcessingException {
         this.logger.info("Transfering money from {} to {}", transactionResource.payer(), transactionResource.payee());
 
         Client clientPayer = this.clientRepository.findById(transactionResource.payer()).orElseThrow();
@@ -46,7 +47,7 @@ public class TransferService {
 
     }
 
-    public void updateBalance(Client clientPayer, Client clientPayee, TransferResource transactionResource) {
+    public void updateBalance(Client clientPayer, Client clientPayee, TransferResource transactionResource) throws JsonProcessingException {
         //TODO: Lock clientPayer and clientPayee
         clientPayer.setBalance(clientPayer.getBalance().subtract(transactionResource.value()));
         clientPayee.setBalance(clientPayee.getBalance().add(transactionResource.value()));
