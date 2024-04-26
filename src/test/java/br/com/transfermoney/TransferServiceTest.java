@@ -1,5 +1,6 @@
 package br.com.transfermoney;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -10,19 +11,19 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @Testcontainers
-class TransfermoneyApplicationTests {
+class TransferServiceTest {
 
-	@Container
-	@ServiceConnection
-	static MongoDBContainer mongoDbContainer = new MongoDBContainer("mongo:latest");
+    @Container
+    @ServiceConnection
+    static MongoDBContainer mongoDbContainer = new MongoDBContainer("mongo:latest");
 
-	@Container
-	@ServiceConnection
-	static RabbitMQContainer rabbitContainer = new RabbitMQContainer("rabbitmq:latest");
+    @Container
+    @ServiceConnection
+    static RabbitMQContainer rabbitContainer = new RabbitMQContainer("rabbitmq:latest");
 
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void myTest() {
+        Assertions.assertFalse(false);
+    }
 }

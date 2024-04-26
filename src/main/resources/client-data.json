@@ -3,6 +3,36 @@
     "_class": "br.com.transfermoney.domain.entity.Client",
     "id": 1,
     "document": "document 1",
-    "fullName": "Client 1"
+    "fullName": "Client 1",
+    "email": "teste@email.com",
+    "password": "123456",
+    "balance": 1000.0
+  },
+  {
+    "_class": "br.com.transfermoney.domain.entity.Client",
+    "id": 2,
+    "document": "document 2",
+    "fullName": "Client 2",
+    "email": "teste2@email.com",
+    "password": "123456",
+    "balance": 2000.0
+  },
+  {
+    "_class": "br.com.transfermoney.domain.entity.Client",
+    "id": 3,
+    "document": "document 3",
+    "fullName": "Client 3",
+    "email": "teste3@email.com",
+    "password": "123456",
+    "balance": 3000.0
+  },
+  {
+    "_class": "br.com.transfermoney.domain.entity.Client",
+    "id": 4,
+    "document": "document 4",
+    "fullName": "Client 4",
+    "email": "teste4@email.com",
+    "password": "123456",
+    "balance": 4000.0
   }
 ]
