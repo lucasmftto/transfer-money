@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class TransferService {
 
@@ -43,6 +45,8 @@ public class TransferService {
 
         if (this.externalService.isAuthorized(clientPayer, clientPayee)) {
             this.updateBalance(clientPayer, clientPayee, transactionResource);
+        } else {
+            throw new IllegalArgumentException("Transfer not authorized");
         }
 
     }
@@ -52,8 +56,7 @@ public class TransferService {
         clientPayer.setBalance(clientPayer.getBalance().subtract(transactionResource.value()));
         clientPayee.setBalance(clientPayee.getBalance().add(transactionResource.value()));
         this.transactionService.addTransaction(clientPayer, clientPayee, transactionResource);
-        this.clientRepository.save(clientPayer);
-        this.clientRepository.save(clientPayee);
+        this.clientRepository.saveAll(List.of(clientPayer, clientPayee));
 
         this.notifierService.notifyClient(clientPayer, clientPayee, transactionResource);
     }

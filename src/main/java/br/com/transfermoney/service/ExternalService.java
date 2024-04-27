@@ -18,8 +18,8 @@ public class ExternalService {
 
     public boolean isAuthorized(Client clientPayer, Client clientPayee) {
         AuthorizationData authorizationData = new AuthorizationData(clientPayer.getId(), clientPayee.getId());
-        return this.externalFeignClient.isAuthorizing(authorizationData).equals("Autorizado");
-    }
+        return this.externalFeignClient.isAuthorizing(authorizationData).get("message").equals("Autorizado");
+}
 
     public void sendNotification(Client clientPayer, Client clientPayee, TransferResource transactionResource) {
         Map<String, Object> fields = Map.of("payer", clientPayer.getId(), "payee", clientPayee.getId(),
