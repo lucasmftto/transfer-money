@@ -53,7 +53,7 @@ class TransferServiceTest {
     void transferTest() throws JsonProcessingException {
         when(this.externalService.isAuthorized(any(), any())).thenReturn(true);
 
-        TransferResource transactionResource = new TransferResource(BigDecimal.TEN, "1", "2");
+        TransferResource transactionResource = new TransferResource(BigDecimal.valueOf(10), "1", "2");
 
         assertEquals(this.transactionRepository.count(), 0);
 

@@ -3,9 +3,12 @@ package br.com.transfermoney.domain.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import static org.springframework.data.mongodb.core.mapping.FieldType.DECIMAL128;
 
 @Document
 public class Transaction {
@@ -17,6 +20,7 @@ public class Transaction {
     private TransactionType transactionType;
     private String description;
     private LocalDate date;
+    @Field(targetType = DECIMAL128)
     private BigDecimal value;
 
 
