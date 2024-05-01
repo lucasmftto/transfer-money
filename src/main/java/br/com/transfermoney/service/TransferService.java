@@ -5,17 +5,21 @@ import br.com.transfermoney.domain.entity.Client;
 import br.com.transfermoney.domain.entity.PersonType;
 import br.com.transfermoney.repository.ClientRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mongodb.client.result.UpdateResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class TransferService {
 
+    public static final String FIELD_BALANCE = "balance";
     Logger logger = LoggerFactory.getLogger(TransferService.class);
 
     @Autowired
@@ -26,6 +30,8 @@ public class TransferService {
     private ExternalService externalService;
     @Autowired
     private NotifierService notifierService;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Transactional
     public void transfer(TransferResource transactionResource) throws JsonProcessingException {
@@ -44,21 +50,44 @@ public class TransferService {
         }
 
         if (this.externalService.isAuthorized(clientPayer, clientPayee)) {
-            this.updateBalance(clientPayer, clientPayee, transactionResource);
+            this.updateBalanceAndSendNotify(clientPayer, clientPayee, transactionResource);
         } else {
             throw new IllegalArgumentException("Transfer not authorized");
         }
 
     }
 
-    public void updateBalance(Client clientPayer, Client clientPayee, TransferResource transactionResource) throws JsonProcessingException {
+    public void updateBalanceAndSendNotify(Client clientPayer, Client clientPayee, TransferResource transactionResource) throws JsonProcessingException {
         //TODO: Lock clientPayer and clientPayee
         clientPayer.setBalance(clientPayer.getBalance().subtract(transactionResource.value()));
         clientPayee.setBalance(clientPayee.getBalance().add(transactionResource.value()));
         this.transactionService.addTransaction(clientPayer, clientPayee, transactionResource);
-        this.clientRepository.saveAll(List.of(clientPayer, clientPayee));
+
+        updateBalance(clientPayer, clientPayee, transactionResource);
 
         this.notifierService.notifyClient(clientPayer, clientPayee, transactionResource);
+    }
+
+    private void updateBalance(Client clientPayer, Client clientPayee, TransferResource transactionResource) {
+        Query queryPayer = new Query().addCriteria(Criteria
+                .where("id").is(clientPayer.getId())
+                .and(FIELD_BALANCE).gte(transactionResource.value()));
+        Update updatePayer = new Update().inc(FIELD_BALANCE, transactionResource.value().negate());
+
+        UpdateResult updateResultPayer = this.mongoTemplate.updateFirst(queryPayer, updatePayer, Client.class);
+
+        if (updateResultPayer.getModifiedCount() == 0) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+
+        Query queryPayee = new Query().addCriteria(Criteria.where("id").is(clientPayee.getId()));
+        Update updatePayee = new Update().inc(FIELD_BALANCE, transactionResource.value());
+
+        UpdateResult updateResultPayee = this.mongoTemplate.updateFirst(queryPayee, updatePayee, Client.class);
+
+        if (updateResultPayee.getModifiedCount() == 0) {
+            throw new IllegalArgumentException("Error updating balance for Payee");
+        }
     }
 }
 

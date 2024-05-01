@@ -5,8 +5,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
+
+import static org.springframework.data.mongodb.core.mapping.FieldType.DECIMAL128;
 
 @Document
 @CompoundIndex(def = "{'id': 1, 'email': 1}", unique = true)
@@ -22,6 +25,7 @@ public class Client {
     @Email
     private String email;
     private String password;
+    @Field(targetType = DECIMAL128)
     private BigDecimal balance;
 
 
