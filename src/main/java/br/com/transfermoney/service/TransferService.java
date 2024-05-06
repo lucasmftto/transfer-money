@@ -3,6 +3,7 @@ package br.com.transfermoney.service;
 import br.com.transfermoney.api.TransferResource;
 import br.com.transfermoney.domain.entity.Client;
 import br.com.transfermoney.domain.entity.PersonType;
+import br.com.transfermoney.infra.exception.NotAuthorizedException;
 import br.com.transfermoney.repository.ClientRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.result.UpdateResult;
@@ -51,13 +52,12 @@ public class TransferService {
 
         if (this.externalService.isAuthorized(clientPayer, clientPayee)) {
             this.updateBalanceAndSendNotify(clientPayer, clientPayee, transactionResource);
-        } else {
-            throw new IllegalArgumentException("Transfer not authorized");
         }
 
     }
 
-    public void updateBalanceAndSendNotify(Client clientPayer, Client clientPayee, TransferResource transactionResource) throws JsonProcessingException {
+    public void updateBalanceAndSendNotify(Client clientPayer, Client clientPayee, TransferResource transactionResource)
+            throws JsonProcessingException {
         //TODO: Lock clientPayer and clientPayee
         clientPayer.setBalance(clientPayer.getBalance().subtract(transactionResource.value()));
         clientPayee.setBalance(clientPayee.getBalance().add(transactionResource.value()));

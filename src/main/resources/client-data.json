@@ -6,7 +6,7 @@
     "fullName": "Client 1",
     "email": "teste@email.com",
     "password": "123456",
-    "balance": 1000.0
+    "balance": 9000.0
   },
   {
     "_class": "br.com.transfermoney.domain.entity.Client",
